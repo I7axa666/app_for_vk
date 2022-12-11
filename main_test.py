@@ -17,9 +17,9 @@ def start():
     myphoto = []
     photo_list = []
 
-    user_id = input("Введите user id?: ")
-    if user_id == "":
-        user_id = '1'
+    owner_id = input("Введите user id?: ")
+    if owner_id == "":
+        owner_id = '1'
     album_id = input("Какие фото загружать wall, profile, saved?: ")
     if album_id == "":
         album_id = 'wall'
@@ -42,7 +42,7 @@ def start():
             folder_id = '1_fFxmHEWC-pkiwkpQCIt7HdBmsF0rRzM'
 
     params_vk_photo = {
-        'user_ids': user_id,
+        'owner_id': owner_id,
         'access_token': TOKEN_VK,
         'v': '5.131',
         'album_id': album_id,
@@ -72,7 +72,7 @@ def start():
         params_creat_folder = {'path': 'Фото с ВК'}
         res = requests.put(request, headers=headers, params=params_creat_folder)
 
-        for photo in tqdm(photos):
+        for photo in tqdm(photos[:num_of_photo]):
             path = '/Фото с ВК/' + photo_list[photos.index(photo)]
             url = photo['sizes'][-1]['url']
             params_push_photo = {'url': url, 'path': path}
@@ -82,7 +82,7 @@ def start():
             time.sleep(1)
 
     else:
-        for photo in tqdm(photos):
+        for photo in tqdm(photos[:num_of_photo]):
             with open(photo_list[photos.index(photo)], 'wb') as handle:
                 response = requests.get(photo['sizes'][-1]['url'], stream=True)
 
@@ -103,7 +103,7 @@ def start():
             service = build('drive', 'v3', credentials=credentials)
             res = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
             time.sleep(1)
-    for photo in photo_list:
-        os.remove(photo)
+        for photo in photo_list:
+            os.remove(photo)
 if __name__ == '__main__':
     start()
