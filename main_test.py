@@ -103,7 +103,14 @@ def start():
             service = build('drive', 'v3', credentials=credentials)
             res = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
             time.sleep(1)
+
         for photo in photo_list:
-            os.remove(photo)
+            try:
+                if os.access(photo, os.R_OK and os.X_OK):
+                    os.remove(photo)
+            except PermissionError:
+                pass
+
+
 if __name__ == '__main__':
     start()
